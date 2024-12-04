@@ -39,4 +39,9 @@ public class CarRepositoryMap implements CarRepository {
         database.put(car.getId(), car);
         return car;
     }
+
+    @Override
+    public Car findById(long id) {
+        return database.getOrDefault(id, null);
+    }
 }

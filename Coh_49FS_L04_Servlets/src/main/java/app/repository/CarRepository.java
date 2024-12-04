@@ -15,4 +15,6 @@ public interface CarRepository {
 
     // Сохранение машины в Хранилище Данных
     Car save(Car car);
+
+    Car findById(long id);
 }
