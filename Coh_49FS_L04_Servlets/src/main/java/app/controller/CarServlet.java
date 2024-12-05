@@ -2,6 +2,7 @@ package app.controller;
 
 import app.model.Car;
 import app.repository.CarRepository;
+import app.repository.CarRepositoryDB;
 import app.repository.CarRepositoryMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -20,7 +21,7 @@ import java.util.Map;
 
 public class CarServlet extends HttpServlet {
 
-    private CarRepository repository = new CarRepositoryMap();
+    private CarRepository repository = new CarRepositoryDB();
     private ObjectMapper mapper = new ObjectMapper();
 
     // GET http://10.2.3.4:8080/cars
@@ -49,7 +50,7 @@ public class CarServlet extends HttpServlet {
             // ["3"]
             String idStr = params.get("id")[0];
             Long id = Long.parseLong(idStr);
-            Car car = repository.findById(id);
+            Car car = repository.getById(id);
             if (car == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.getWriter().write("Car not found!");
@@ -71,10 +72,20 @@ public class CarServlet extends HttpServlet {
 //        });
     }
 
+    // POST -> /cars
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Для сохранения нового автомобиля в БД
-        super.doPost(req, resp);
+
+        // Преобразуем json из запроса в java-объект, используя Jackson
+        Car car = mapper.readValue(request.getReader(), Car.class);
+
+        // Сохраняем в бд
+        car = repository.save(car);
+
+        String json = mapper.writeValueAsString(car);
+
+        response.getWriter().write(json);
     }
 
     @Override

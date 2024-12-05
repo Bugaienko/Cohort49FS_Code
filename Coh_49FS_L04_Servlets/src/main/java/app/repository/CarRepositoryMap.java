@@ -41,7 +41,18 @@ public class CarRepositoryMap implements CarRepository {
     }
 
     @Override
-    public Car findById(long id) {
+    public Car update(Car car) {
+        // TODO домашнее задание
+        return null;
+    }
+
+    @Override
+    public void deleteById(long id) {
+        // TODO домашнее задание
+    }
+
+    @Override
+    public Car getById(long id) {
         return database.getOrDefault(id, null);
     }
 }

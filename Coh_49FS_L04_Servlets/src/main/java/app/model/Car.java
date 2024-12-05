@@ -20,6 +20,9 @@ public class Car {
         this.year = year;
     }
 
+    public Car() {
+    }
+
     @Override
     public String toString() {
         return String.format("Car: id - %d, brand - %s, price - %s", id, brand, price);
