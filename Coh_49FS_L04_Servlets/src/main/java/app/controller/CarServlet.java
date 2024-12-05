@@ -27,6 +27,7 @@ public class CarServlet extends HttpServlet {
     // GET http://10.2.3.4:8080/cars
 
 
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Для получение из БД автомобилей (всех или одного автомобиля по id)

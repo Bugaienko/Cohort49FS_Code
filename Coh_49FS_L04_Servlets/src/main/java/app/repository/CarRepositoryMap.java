@@ -42,13 +42,22 @@ public class CarRepositoryMap implements CarRepository {
 
     @Override
     public Car update(Car car) {
-        // TODO домашнее задание
+        //Получаю из БД автомобиль с id
+      Car carFromDb = database.getOrDefault(car.getId(), null);
+      if (carFromDb != null) {
+          // Изменяю цену
+          carFromDb.setPrice(car.getPrice());
+//          carFromDb.setYear(car.getYear());
+//          carFromDb.setBrand(car.getBrand());
+          // Возвращаю обновленный авто
+          return carFromDb;
+      }
         return null;
     }
 
     @Override
     public void deleteById(long id) {
-        // TODO домашнее задание
+       database.remove(id);
     }
 
     @Override
