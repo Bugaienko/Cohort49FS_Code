@@ -3,8 +3,10 @@ package app.repository;
 import app.constants.Constants;
 import app.model.Car;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
@@ -50,13 +52,36 @@ public class CarRepositoryDB implements CarRepository {
 
     @Override
     public Car getById(long id) {
+        // SELECT * FROM cars WHERE id = 5;
+
         try (Connection connection = getConnection()) {
+
+            String query = String.format("SELECT * FROM cars WHERE id = %d", id);
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            if (resultSet.next()) {
+                Long idDb = resultSet.getLong("id");
+                String brand = resultSet.getString("brand");
+                BigDecimal price = resultSet.getBigDecimal("price");
+                int year = resultSet.getInt("year");
+
+                Car car = new Car(brand, price, year);
+                car.setId(idDb);
+                return car;
+            }
+
+            // В ResultSet ничего нет
+            return null;
+
 
 
         } catch (Exception e){
             throw new RuntimeException(e);
         }
-        return null;
+
     }
 
     @Override
@@ -72,7 +97,27 @@ public class CarRepositoryDB implements CarRepository {
 
            Statement statement = connection.createStatement();
 
-           statement.execute(query);
+           // statement.execute(query); - запросы, который вносят  изменения в БД (POST, PUT..)
+           // statement.executeQuery(query); - запросы для получения данных (GET)
+
+           // Т.к. у нас метод save вносит изменения (записывает авто в БД) - мы используем execute().
+           statement.execute(query, Statement.RETURN_GENERATED_KEYS);
+
+           // ResultSet - объект, который используется для хранения данных, полученных в результате
+           // выполнения SQL-запроса
+           // Табличное представление данных - каждая строка соответствует записи в БД. Столбец - поле этой записи.
+           ResultSet resultSet = statement.getGeneratedKeys();
+
+           resultSet.next();
+           /*
+           getString(String columnLabel) - вернет значение указанного столбца как строку
+           getInt(String columnLabel) - вернет значение указанного столбца как число
+           getDate(String columnLabel) - вернет значение указанного столбца как объект Date
+            */
+           // Получаю значение столбца id как Long
+           Long id = resultSet.getLong("id");
+          // Long id = resultSet.getLong(1);
+           car.setId(id);
 
            return car;
 
